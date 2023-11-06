@@ -1,0 +1,21 @@
+h1{
+    color: white;
+    background-color: black;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.aqua {
+    color: aqua; 
+}
+h2 {
+    color: wheat;
+    background-color: purple;
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+h3{
+    column-rule: rgb(138, 1, 138);
+    background-color: rgb(140, 205, 235);
+    text-align: right;
+    text-decoration: underline;
+}
+

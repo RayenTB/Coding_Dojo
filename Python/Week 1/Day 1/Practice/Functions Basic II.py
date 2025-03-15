@@ -2,7 +2,6 @@ def countdown():
     for i in range(10,-1,0):{
         print(i)
     }
-
 def printreturn(numbers):
     print(numbers[0]) 
     return numbers[1]

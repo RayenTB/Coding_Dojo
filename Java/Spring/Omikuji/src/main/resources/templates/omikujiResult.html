@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Omikuji Result</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Your Omikuji Fortune</h1>
+    <p>In <strong th:text="${number}"></strong> years, you will live in <strong th:text="${city}"></strong> with
+       <strong th:text="${person}"></strong> as your best friend, doing lots of <strong th:text="${hobby}"></strong> and
+       surrounding yourself with <strong th:text="${thing}"></strong>. Remember to always: <strong th:text="${message}"></strong></p>
+    <a href="/omikuji">Back to Omikuji Form</a>
+</body>
+</html>

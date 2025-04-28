@@ -38,11 +38,16 @@
 		
 		<!-- Edit and Delete Buttons -->
 		<div class="d-flex justify-content-center mb-4">
-		    <a href="/edit/${book.id}">Edit</a>
-        <a href="/books/delete/${book.id}" onclick="return confirm('Are you sure you want to delete this book?');">Delete</a>
+		    <a href="/books/edit/${book.id}" class="btn btn-warning mr-2">Edit</a>
+
+		    <form action="/books/delete/${book.id}" method="post" onsubmit="return confirm('Are you sure you want to delete this book?');">
+		        <input type="hidden" name="_method" value="delete" />
+		        <button type="submit" class="btn btn-danger">Delete</button>
+		    </form>
 		</div>
 		
 	</div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

@@ -11,7 +11,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Book Share</a>
+        <a class="navbar-brand" href="#">Book Edit</a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
@@ -26,27 +26,29 @@
 
     <div class="container mt-4">
         <h3>Edit Book</h3>
-       <form:form action="/edit/${book.id}" method="post" modelAttribute="book" class="mb-4">
-        <form:errors path="*" Class="alert alert-danger" element="div"/>
-            
+        <form:form action="/edit/${book.id}" method="post" modelAttribute="book" class="mb-4">
+            <input type="hidden" name="_method" value="put"/>
+
+            <form:errors path="*" cssClass="alert alert-danger" element="div"/>
+
             <div class="form-group">
                 <form:label path="title">Title</form:label>
                 <form:input path="title" cssClass="form-control" />
                 <form:errors path="title" cssClass="text-danger" />
             </div>
-            
+
             <div class="form-group">
                 <form:label path="author">Author</form:label>
                 <form:input path="author" cssClass="form-control" />
                 <form:errors path="author" cssClass="text-danger" />
             </div>
-            
+
             <div class="form-group">
                 <form:label path="thoughts">My thoughts</form:label>
                 <form:textarea path="thoughts" cssClass="form-control" rows="5"></form:textarea>
                 <form:errors path="thoughts" cssClass="text-danger" />
             </div>
-            
+
             <button type="submit" class="btn btn-primary">Submit</button>
         </form:form>
     </div>

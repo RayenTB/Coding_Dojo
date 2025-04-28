@@ -4,17 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import com.codingdojo.BookClub.Models.Book;
-import com.codingdojo.BookClub.Models.LoginUser;
-import com.codingdojo.BookClub.Models.User;
-import com.codingdojo.BookClub.Services.BookService;
-import com.codingdojo.BookClub.Services.UserService;
+import com.book.Models.Book;
+import com.book.Models.LoginUser;
+import com.book.Models.User;
+import com.book.Services.BookService;
+import com.book.Services.UserService;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -22,133 +18,132 @@ import jakarta.validation.Valid;
 @Controller
 public class MainController {
 
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private BookService bookService;
 
-	@Autowired
-	private UserService userService;
-	@Autowired
-	private BookService bookService;
-    
+    // Home page
     @GetMapping("/")
     public String index(Model model) {
-    
         model.addAttribute("newUser", new User());
         model.addAttribute("newLogin", new LoginUser());
         return "index.jsp";
     }
-    
-    @PostMapping("/register")
-    public String register(@Valid @ModelAttribute("newUser") User newUser, 
-            BindingResult result, Model model, HttpSession session) {
-        
-    	User user = userService.register(newUser, result);
-    	        
-        if(result.hasErrors()) {
 
+    // Register
+    @PostMapping("/register")
+    public String register(@Valid @ModelAttribute("newUser") User newUser, BindingResult result, Model model, HttpSession session) {
+        User user = userService.register(newUser, result);
+        if (result.hasErrors()) {
             model.addAttribute("newLogin", new LoginUser());
             return "index.jsp";
         }
-        
         session.setAttribute("userId", user.getId());
-    
         return "redirect:/books";
     }
-    
+
+    // Login
     @PostMapping("/login")
-    public String login(@Valid @ModelAttribute("newLogin") LoginUser newLogin, 
-            BindingResult result, Model model, HttpSession session) {
-        
+    public String login(@Valid @ModelAttribute("newLogin") LoginUser newLogin, BindingResult result, Model model, HttpSession session) {
         User user = userService.login(newLogin, result);
-    
-        if(result.hasErrors()) {
+        if (result.hasErrors()) {
             model.addAttribute("newUser", new User());
             return "index.jsp";
         }
-    
         session.setAttribute("userId", user.getId());
-    
         return "redirect:/books";
     }
-    
+
+    // View all books
     @GetMapping("/books")
     public String books(Model model, HttpSession session) {
-    	
-    	if(session.getAttribute("userId") == null) {
-    		return "redirect:/";
-    	}
-    	
-    	model.addAttribute("books", bookService.all());
-    	model.addAttribute("user", userService.findById((Long)session.getAttribute("userId")));
-    	return "books.jsp";
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/";
+        }
+        model.addAttribute("books", bookService.all());
+        model.addAttribute("user", userService.findById((Long) session.getAttribute("userId")));
+        return "books.jsp";
     }
-    
+
+    // New Book form
     @GetMapping("/newBook")
     public String newBook(@ModelAttribute("book") Book book, Model model, HttpSession session) {
-    	
-    	User user = userService.findById((Long)session.getAttribute("userId"));
-    	model.addAttribute("user", user);
-    	
-    	return "newBook.jsp";
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/";
+        }
+        model.addAttribute("user", userService.findById((Long) session.getAttribute("userId")));
+        return "newBook.jsp";
     }
-    
-    @PostMapping("/books")
-    public String createBook(@Valid @ModelAttribute("book") Book book, BindingResult result, HttpSession session) {
 
+    // Create Book
+    @PostMapping("/books")
+    public String createBook(@Valid @ModelAttribute("book") Book book, BindingResult result, Model model, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/";
+        }
         if (result.hasErrors()) {
+            model.addAttribute("user", userService.findById((Long) session.getAttribute("userId")));
             return "newBook.jsp";
         }
-
         Long userId = (Long) session.getAttribute("userId");
         User user = userService.findById(userId);
-        
         book.setUser(user);
-        
         bookService.create(book);
-        
         return "redirect:/books";
     }
-    
+
+    // View one book (Show Page)
     @GetMapping("/books/{id}")
-    public String showBook(Model model, @PathVariable("id") Long id, HttpSession session) {
-    	if(session.getAttribute("userId") == null) {
-    		return "redirect:/";
-    	}
-    	Book book = bookService.findById(id);
-    	model.addAttribute("book", book);
-    	model.addAttribute("user", userService.findById((Long)session.getAttribute("userId")));
-    	
-    	return "showBook.jsp";
+    public String showBook(@PathVariable("id") Long id, Model model, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/";
+        }
+        Book book = bookService.findOne(id);
+        model.addAttribute("book", book);
+        return "showBook.jsp";
     }
-    
-    @GetMapping("/edit/{id}")
-    public String editBook(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("book", bookService.findById(id));
+
+    // Edit form (GET)
+    @GetMapping("/books/edit/{id}")
+    public String editBook(@PathVariable("id") Long id, Model model, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/";
+        }
+        Book book = bookService.findOne(id);
+        model.addAttribute("book", book);
+        model.addAttribute("user", userService.findById((Long) session.getAttribute("userId")));
         return "editBook.jsp";
     }
 
-    @PostMapping("/edit/{id}")
-    public String updateBook(@Valid @ModelAttribute("book") Book book, BindingResult result, HttpSession session, Model model) {
+    // Update book (PUT)
+    @PutMapping("/books/{id}")
+    public String updateBook(@Valid @ModelAttribute("book") Book book, BindingResult result, Model model, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/";
+        }
         if (result.hasErrors()) {
+            model.addAttribute("user", userService.findById((Long) session.getAttribute("userId")));
             return "editBook.jsp";
         }
-        Long userId = (Long) session.getAttribute("userId");
-        User user = userService.findById(userId);
-        
-        book.setUser(user);
         bookService.update(book);
-        return "redirect:/books/{id}";
+        return "redirect:/books";
     }
-    
-    @RequestMapping("/books/delete/{id}")
-	public String deleteTravel(@PathVariable("id") Long id) {
-		Book book = bookService.findById(id);
-		bookService.delete(book);
-		return "redirect:/books";
-	}
-    
+
+    // Delete book
+    @DeleteMapping("/books/delete/{id}")
+    public String deleteBook(@PathVariable("id") Long id, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/";
+        }
+        bookService.delete(id);
+        return "redirect:/books";
+    }
+
+    // Logout
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-    	session.invalidate();
-    	return "redirect:/";
+        session.invalidate();
+        return "redirect:/";
     }
-    
 }

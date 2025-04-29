@@ -1,4 +1,4 @@
-package com.book;
+package com.book.bookclub;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
